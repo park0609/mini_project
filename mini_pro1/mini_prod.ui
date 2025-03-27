@@ -28,14 +28,40 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>91</width>
-     <height>23</height>
+     <x>40</x>
+     <y>50</y>
+     <width>151</width>
+     <height>61</height>
     </rect>
    </property>
    <property name="text">
-    <string>Main</string>
+    <string>메인화면</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>50</y>
+     <width>141</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>발주화면</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_4">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>50</y>
+     <width>141</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>판매화면</string>
    </property>
   </widget>
  </widget>
@@ -45,11 +71,11 @@
    <sender>pushButton</sender>
    <signal>clicked()</signal>
    <receiver>Form</receiver>
-   <slot>btn_third_to_main()</slot>
+   <slot>btn_second_to_main()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>22</y>
+     <x>86</x>
+     <y>62</y>
     </hint>
     <hint type="destinationlabel">
      <x>257</x>
@@ -57,8 +83,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>btn_second_to_third()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>371</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>468</x>
+     <y>214</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>btn_third_to_main()</slot>
+  <slot>btn_second_to_third()</slot>
  </slots>
 </ui>

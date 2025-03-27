@@ -25,40 +25,40 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>91</width>
-     <height>21</height>
+     <x>270</x>
+     <y>40</y>
+     <width>161</width>
+     <height>71</height>
     </rect>
    </property>
    <property name="text">
-    <string>Main</string>
+    <string>상품화면</string>
    </property>
   </widget>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton</sender>
+   <sender>pushButton_2</sender>
    <signal>clicked()</signal>
    <receiver>form</receiver>
-   <slot>btn_second_to_main()</slot>
+   <slot>btn_third_to_second()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>72</x>
-     <y>30</y>
+     <x>369</x>
+     <y>89</y>
     </hint>
     <hint type="destinationlabel">
-     <x>237</x>
-     <y>152</y>
+     <x>463</x>
+     <y>211</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>btn_second_to_main()</slot>
+  <slot>btn_third_to_second()</slot>
  </slots>
 </ui>
