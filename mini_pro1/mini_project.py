@@ -341,6 +341,7 @@ class DeliveryWindow(QDialog,QWidget): #발주 시스템 코드
         uic.loadUi('./mini_pro1/order.ui',self)
         self.setWindowTitle('발주 신청 및 관리')
         self.loadData()
+        self.btn_search.clicked.connect(self.btn_search_click)
 
     def btn_third_to_second(self): #발주서비스와 상품서비스가 연결되있는 버튼 코드
         self.hide()                     
@@ -360,7 +361,25 @@ class DeliveryWindow(QDialog,QWidget): #발주 시스템 코드
                 self.delivery.setItem(i, 0, QTableWidgetItem(prod_name)) # oracle number타입은 뿌릴때 str()로 형변환 필요!
                 self.delivery.setItem(i, 1, QTableWidgetItem(prod_order))
                 self.delivery.setItem(i, 2, QTableWidgetItem(prod_delivery))
-                
+    
+    def btn_search_click(self):
+        name = self.prod_name.text()
+        order = self.prod_orderdate.text()
+        delivery_d = self.prod_delidate.text()
+        
+        
+
+        if name == '' and order == '' and delivery_d == '':
+            self.loadData()
+            return # 함수 빠져나가기
+        else: 
+            self.searchData(name) # 튜플을 파라미터로 전달
+            if self.searchData(name) == True:
+                return
+            else:
+                QMessageBox.about(self,'저장실패','관리자에게 문의해주세요!')
+            self.loadData() #다시 컬럼을 테이블위젯에 띄우기
+            #self.clearInput() #input값 삭제 함수
 
     def loadData(self):
         # DB연결
@@ -383,6 +402,33 @@ class DeliveryWindow(QDialog,QWidget): #발주 시스템 코드
             else:
                 return False
 
+        except oci.DatabaseError as e:
+            QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
+        finally:
+            cursor.close()
+            conn.close()
+
+    def searchData(self, name):
+        # DB연결
+        try:
+            conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+            cursor = conn.cursor()
+
+            query = '''
+            SELECT *
+            FROM MINIPROJECT.DELIVERY
+            where prod_name = :v_name 
+            '''
+            cursor.execute(query, {'v_name': name})
+            delivery = cursor.fetchall()  # 모든 결과를 가져옵니다.
+
+            if delivery:  # 데이터가 존재하면
+                self.makeTable(delivery)
+                return True
+            else:
+                return False
+
+            self.makeTable(teamprod)  # 새로 생성한 리스트를 파라미터로 전달
         except oci.DatabaseError as e:
             QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
         finally:
