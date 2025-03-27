@@ -10,8 +10,8 @@ import uuid
 sid_m = 'XE'
 host_m = 'localhost'
 port_m = 1521
-username_m = 'sampleuser'
-password_m = '12345'
+username_m = 'system'
+password_m = 'oracle'
 
 
 #스태프 연결
@@ -32,8 +32,9 @@ password_d = '12345'
 #아래 상태창
 basic_msg = '편의점 물품 관리 시스템 v 1.0'
 
-id = ['sumin0759@gmail.com','dongho7736@gmail.com','guppy135@naver.com','rudwnzlxl6@naver.com']
-pwd = [123456]
+main_id = ['sumin0759@gmail.com','dongho7736@gmail.com']
+deli_id = ['guppy135@naver.com','rudwnzlxl6@naver.com']
+pwd = ['123456']
 
 #MainWindow(편의점 시스템)실행
 class MainWindow(QDialog,QWidget):
@@ -44,7 +45,7 @@ class MainWindow(QDialog,QWidget):
         
 
     def initUI(self):
-        uic.loadUi('./mini_pro1/mini_main2.ui', self)
+        uic.loadUi('./mini_pro1/mini_main2.ui',self)
         self.setWindowTitle('편의점 물품 관리 시스템')
     
         self.btn_login.clicked.connect(self.btn_login_click)
@@ -53,52 +54,40 @@ class MainWindow(QDialog,QWidget):
         login_id = self.input_prod_id.text()
         login_pwd = self.input_prod_pwd.text()
 
-        if login_id == '' or login_pwd == '':
-            QMessageBox.about(self,'경고','아이디와 비밀번호 모두 기입하시오!')
+
+        if (login_id == '') and (login_pwd == ''):
+            QMessageBox.about(self,'경고','아이디와 비밀번호 모두 기입하시오!')           
             return # 함수 빠져나가기
+        
         elif login_id == '':
             QMessageBox.warning(self,'경고','아이디를 입력하시오!')
             return
         elif login_pwd == '':
             QMessageBox.warning(self,'경고','비밀번호를 입력하시오!')
             return
-        elif login_id in id and login_pwd in pwd:
-            
-            def btn_main_to_second(self): #상품서비스창과 메인과 연결되있는 버튼 코드
-                self.hide()                     
-                self.prod = ProdWindow()    
-                self.prod.exec()             
-                self.show()
+        
+        elif login_id in deli_id and login_pwd in pwd:
+            self.btn_main_to_sub()
+
+        elif login_id in main_id and login_pwd in pwd:
+            self.btn_main_to_second()
         
         else: pass
 
-            #print('DB입력 진행')
-            #values = (login_id, login_pwd) # 변수값 3개를 튜플로 묶어서 
-            #self.addData(values) # 튜플을 파라미터로 전달
-            #if self.addData(values) == True:
-            #    QMessageBox.about(self,'로그인성공','어서오세요!')
-            #else:
-            #    QMessageBox.about(self,'로그인실패','관리자에게!')
-            #self.loadData() #다시 컬럼을 테이블위젯에 띄우기
-            #self.clearInput() #input값 삭제 함수
+    def btn_main_to_second(self): #상품서비스창과 메인과 연결되있는 버튼 코드
+        self.hide()                     
+        self.prod = ProdWindow()    
+        self.prod.exec()             
+        self.show()
+    
+    def btn_main_to_sub(self): #상품서비스창이 배달기사 전용 화면으로 연결되있는 버튼 코드
+        self.hide()                     
+        self.prod = ProdSubWindow()    
+        self.prod.exec()             
+        self.show()
 
 
-    def create_session(username, role):
-    
-    #로그인 성공 시, 랜덤한 세션 ID를 생성하여 데이터베이스에 저장한다.
-    
-        session_id = str(uuid.uuid4())  # 랜덤한 세션 ID 생성
-        conn = cx_Oracle.connect("your_user/your_password@your_db")
-        cursor = conn.cursor()
-    
-        query = '''
-        INSERT INTO sessions (session_id, username, role) VALUES (:1, :2, :3)
-        '''
-        cursor.execute(query, (session_id, username, role))
-        conn.commit()
-    
-        return session_id
-
+# 매니저, 스태프 화면
 
 class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
     def __init__(self):
@@ -108,7 +97,7 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
     
     def initUi(self):
         uic.loadUi('./mini_pro1/mini_prod.ui',self)
-        self.setWindowTitle('상품 관리')
+        self.setWindowTitle('상품 확인 및 관리 시스템')
 
     def btn_second_to_third(self): #상품서비스와 발주서비스가 연결되있는 버튼 코드
          self.hide()                     
@@ -116,13 +105,18 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
          self.prod_deli.exec()             
          self.show()
 
-    def btn_second_to_main(self): #상품서비스와 발주서비스가 연결되있는 버튼 코드
-         self.hide()                     
-         self.prod_main = MainWindow()    
-         self.prod_main.exec()             
-         self.show()
-    
 
+# 배달기사 전용 화면
+    
+class ProdSubWindow(QDialog,QWidget): # 제품관리 시스템 코드
+    def __init__(self):
+        super(ProdSubWindow,self).__init__()
+        self.initUi()
+        self.show()
+    
+    def initUi(self):
+        uic.loadUi('./mini_pro1/mini_sub.ui',self)
+        self.setWindowTitle('상품 확인 시스템(배달기사 전용)')
 
 
 class DeliveryWindow(QDialog,QWidget): #발주 시스템 코드
@@ -151,51 +145,3 @@ if __name__ == '__main__':
     win = MainWindow()
     win.show()
     app.exec()
-
-#==============================================================================
-
-    #        self.btn_search.clicked.connect(self.btn_search_click)
-
-#   def clearInput(self):
-#       self.input_prod_name.clear()
-#       self.input_prod_order.clear()
-#       self.input_prod_delivery.clear()
-        
-
-#    def btn_search_click(self):
-#        prod_name = self.input_prod_name.text()
-#        if prod_name == '':
-#            QMessageBox.about(self,'경고','제품명은 필수입니다!')
-#        else:
-#            values = (prod_name)
-#            self.searchData(values)
-#            self.loadData()
-#            self.clearInput()
-
-#    def searchData(self, tuples):
-#        isSuccede = False #성공여부 플랴그 변수
-#        conn = oci.connect(f'{username}/{password}@{host}:{port}/{sid}')
-#        cursor = conn.cursor()
-
- #       try:
- #           conn.begin() # begin 트랜잭션 시작
-
-            #쿼리 작성
- #           query = '''SELECT prod_name,prod_order,prod_delivery
- #                        FROM DELIVERY
- #                       WHERE prod_name = :v_prod_name
- #                   '''
- #           cursor.execute(query, tuples)
- #           conn.commit() 
- #           last_id = cursor.lastrowid
- #           print(last_id) 
- #           isSuccede = True 
- #       except Exception as e:
- #           print(e)
- #           conn.rollback() 
- #           isSuccede = False
- #       finally:
- #           cursor.close()
- #           conn.close()
-
- #       return isSuccede # 

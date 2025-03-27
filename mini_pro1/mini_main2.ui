@@ -60,24 +60,7 @@
   </widget>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>btn_login</sender>
-   <signal>clicked()</signal>
-   <receiver>Form</receiver>
-   <slot>btn_main_to_second()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>370</x>
-     <y>400</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>445</x>
-     <y>454</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>btn_main_to_second()</slot>
  </slots>
