@@ -155,5 +155,82 @@ self."테이블 명".doubleClicked.connect(self.tblstudentDoubleClick) # 안에�
             
 
 #====================================================================================================
-#창변환 함수
-# 시그널 연결 후 
+ #세션 연결 함수 인데 진ㅉ ㅏ안됨 개어려움 죽을맛임 진짜
+ def create_session(username, role):
+    
+    #로그인 성공 시, 랜덤한 세션 ID를 생성하여 데이터베이스에 저장한다.
+    
+        session_id = str(uuid.uuid4())  # 랜덤한 세션 ID 생성
+        conn = cx_Oracle.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+        cursor = conn.cursor()
+    
+        query = '''
+        INSERT INTO sessions (session_id, username, role) VALUES (:1, :2, :3)
+        '''
+        cursor.execute(query, (session_id, username, role))
+        conn.commit()
+    
+        return session_id
+
+    def get_session(session_id):
+    
+        conn = cx_Oracle.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+        cursor = conn.cursor()
+
+        query = '''SELECT username, role FROM sessions WHERE session_id=:1'''
+        cursor.execute(query, (session_id,))
+        return cursor.fetchone()  # 세션 정보 반환
+
+#====================================================================================================
+class InventoryApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # 메인 위젯 설정
+        self.setWindowTitle("재고 관리 프로그램")
+        self.setGeometry(100, 100, 600, 400)
+
+        # 메인 레이아웃
+        main_widget = QWidget(self)
+        self.setCentralWidget(main_widget)
+        layout = QVBoxLayout(main_widget)
+
+        # 제품 목록 테이블
+        self.product_table = QTableWidget()
+        self.product_table.setRowCount(3)  # 예시용 3개의 제품
+        self.product_table.setColumnCount(2)  # 제품명과 이미지 경로
+        self.product_table.setHorizontalHeaderLabels(["제품명", "이미지 경로"])
+        layout.addWidget(self.product_table)
+
+        # 테이블에 데이터 추가
+        self.product_table.setItem(0, 0, QTableWidgetItem("제품 A"))
+        self.product_table.setItem(0, 1, QTableWidgetItem("./images/product_a.png"))
+        self.product_table.setItem(1, 0, QTableWidgetItem("제품 B"))
+        self.product_table.setItem(1, 1, QTableWidgetItem("./images/product_b.png"))
+        self.product_table.setItem(2, 0, QTableWidgetItem("제품 C"))
+        self.product_table.setItem(2, 1, QTableWidgetItem("./images/product_c.png"))
+
+        # QLabel: 제품 이미지 표시
+        self.image_label = QLabel("이미지가 여기에 표시됩니다.")
+        self.image_label.setFixedSize(300, 300)
+        self.image_label.setStyleSheet("border: 1px solid black;")  # 테두리 추가
+        self.image_label.setScaledContents(True)  # 이미지 크기를 QLabel 크기에 맞춤
+        layout.addWidget(self.image_label)
+
+        # 테이블에서 행을 선택했을 때 이벤트 연결
+        self.product_table.cellClicked.connect(self.update_image)
+
+    def update_image(self, row, column):
+        # 선택된 행(row)의 이미지 경로 가져오기
+        image_path = self.product_table.item(row, 1).text()
+
+        # QLabel에 이미지 표시
+        pixmap = QPixmap(image_path)
+        if not pixmap.isNull():
+            self.image_label.setPixmap(pixmap)
+        else:
+            self.image_label.setText("이미지를 로드할 수 없습니다.")
+
+            import sys
+from PyQt5.QtWidgets import QApplication, QLabel, QTableWidget, QTableWidgetItem, QVBoxLayout, QMainWindow, QWidget
+from PyQt5.QtGui import QPixmap
