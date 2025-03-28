@@ -31,12 +31,10 @@ password_d = '12345'
 
 #아래 상태창
 basic_msg = '편의점 물품 관리 시스템 v 1.0'
-
 main_id = ['sumin0759@gmail.com','dongho7736@gmail.com','a']
 deli_id = ['guppy135@naver.com','rudwnzlxl6@naver.com',"b"]
 pwd = ['123456']
 
-#MainWindow(편의점 시스템)실행
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -49,9 +47,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('편의점 물품 관리 시스템')
     
         self.btn_login.clicked.connect(self.btn_login_click)
-        # self.btn_add.clicked.connect(self.btn_add_click)
-        # self.btn_mod.clicked.connect(self.btn_mod_click)
-        # self.btn_del.clicked.connect(self.btn_del_click)
 
 
     def btn_login_click(self):
@@ -61,7 +56,7 @@ class MainWindow(QMainWindow):
 
         if (login_id == '') and (login_pwd == ''):
             QMessageBox.about(self,'경고','아이디와 비밀번호 모두 기입하시오!')           
-            return # 함수 빠져나가기
+            return 
         
         elif login_id == '':
             QMessageBox.warning(self,'경고','아이디를 입력하시오!')
@@ -70,31 +65,30 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self,'경고','비밀번호를 입력하시오!')
             return
         
-        elif login_id in deli_id and login_pwd in pwd:
-            self.btn_main_to_sub()
-
         elif login_id in main_id and login_pwd in pwd:
             self.btn_main_to_second()
+            return
+        
+        elif login_id in deli_id and login_pwd in pwd:
+            self.btn_main_to_sub()
+            return
         
         else: pass
 
-    def btn_main_to_second(self): #상품서비스창과 메인과 연결되있는 버튼 코드
+    def btn_main_to_second(self): 
         self.hide()                     
         self.prod = ProdWindow()    
         self.prod.exec()             
         self.show()
 
     
-    def btn_main_to_sub(self): #상품서비스창이 배달기사 전용 화면으로 연결되있는 버튼 코드
+    def btn_main_to_sub(self): 
         self.hide()                     
         self.prod = ProdSubWindow()    
         self.prod.exec()             
         self.show()
 
-
-# 매니저, 스태프 화면
-
-class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
+class ProdWindow(QDialog,QWidget): 
     def __init__(self):
         super(ProdWindow,self).__init__()
         self.initUi()
@@ -107,7 +101,7 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
         self.btn_search.clicked.connect(self.btn_search_click)
         self.teamprod.doubleClicked.connect(self.teamprodDoubleClick)
 
-    def btn_second_to_third(self): #상품서비스와 발주서비스가 연결되있는 버튼 코드
+    def btn_second_to_third(self): 
          self.hide()                     
          self.prod_deli = DeliveryWindow()    
          self.prod_deli.exec()             
@@ -121,16 +115,16 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
         self.prod_adult.clear()
         self.prod_amount.clear()
 
-    def makeTable(self, teamprod): # 수정 필요 최종 UI뜨면 맞춰 수정 3월27일 오후5시30분
-            self.teamprod.setSelectionMode(QAbstractItemView.SingleSelection) # 단일 row선택모드
-            self.teamprod.setEditTriggers(QAbstractItemView.NoEditTriggers) #컬럼수 변경금지
+    def makeTable(self, teamprod): 
+            self.teamprod.setSelectionMode(QAbstractItemView.SingleSelection) 
+            self.teamprod.setEditTriggers(QAbstractItemView.NoEditTriggers) 
             self.teamprod.setColumnCount(6)
-            self.teamprod.setRowCount(len(teamprod))# 커서에 들어있는 데이터 길이만큼 row 생성
+            self.teamprod.setRowCount(len(teamprod))
             self.teamprod.setHorizontalHeaderLabels(['상품번호','상품카테고리','상품명','상품가격','구매연령제한','상품수량'])
 
-            # 전달받은 cursor를 반복문으로 테이블 위젯에 뿌리는 작업
+           
             for i, (prod_number,prod_category,prod_name,prod_price,prod_adult,prod_amount) in enumerate(teamprod):
-                self.teamprod.setItem(i, 0, QTableWidgetItem(str(prod_number))) # oracle number타입은 뿌릴때 str()로 형변환 필요!
+                self.teamprod.setItem(i, 0, QTableWidgetItem(str(prod_number)))
                 self.teamprod.setItem(i, 1, QTableWidgetItem(prod_category))
                 self.teamprod.setItem(i, 2, QTableWidgetItem(prod_name))
                 self.teamprod.setItem(i, 3, QTableWidgetItem(str(prod_price)))
@@ -138,8 +132,8 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
                 self.teamprod.setItem(i, 5, QTableWidgetItem(str(prod_amount)))
 
     def teamprodDoubleClick(self):
-        #QMessageBox.about(self,'더블클릭','동작합니다!')
-        selected = self.teamprod.currentRow() #현재 선택된 row의 index를 반환하는함수
+        
+        selected = self.teamprod.currentRow() 
         number = self.teamprod.item(selected,0).text()
         category = self.teamprod.item(selected,1).text()
         name = self.teamprod.item(selected,2).text()
@@ -165,43 +159,16 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
 
         if name == '' and category == '' and number == '':
             self.loadData()
-            return # 함수 빠져나가기
+            return 
         else: 
-            self.searchData(name,number,category) # 튜플을 파라미터로 전달
+            self.searchData(name,number,category) 
             if self.searchData(name,number,category) == True:
                 return
             else:
                 QMessageBox.about(self,'검색실패','관리자에게 문의해주세요!')
-            self.loadData() #다시 컬럼을 테이블위젯에 띄우기
-            self.clearInput() #input값 삭제 함수
+            self.loadData() 
+            self.clearInput() 
 
-           
-    
-
-    # def btn_add_click(self):
-    #     std_id = self.input_std_id.text()
-    #     std_name = self.input_std_name.text()
-    #     std_mobile = self.input_std_mobile.text()
-    #     std_regyear = self.input_std_regyear.text()
-    #     print(std_name,std_mobile,std_regyear)
-
-
-
-    # def btn_mod_click(self):
-    #     std_id = self.input_std_id.text()
-    #     std_name = self.input_std_name.text()
-    #     std_mobile = self.input_std_mobile.text()
-    #     std_regyear = self.input_std_regyear.text()
-    #     print(std_name,std_mobile,std_regyear)
-    
-
-
-    # def btn_del_click(self):
-    #     std_id = self.input_std_id.text()
-    #     std_name = self.input_std_name.text()
-    #     std_mobile = self.input_std_mobile.text()
-    #     std_regyear = self.input_std_regyear.text()
-    #     print(std_name,std_mobile,std_regyear)
 
     def loadData(self):
         # DB연결
@@ -214,9 +181,9 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
             FROM MINIPROJECT.TEAMPROD
             '''
             cursor.execute(query)
-            teamprod = cursor.fetchall()  # 모든 결과를 가져옵니다.
+            teamprod = cursor.fetchall()  
 
-            self.makeTable(teamprod)  # 새로 생성한 리스트를 파라미터로 전달
+            self.makeTable(teamprod) 
         except oci.DatabaseError as e:
             QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
         finally:
@@ -224,7 +191,7 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
             conn.close()
 
     def searchData(self, name, number,category):
-        # DB연결
+       
         try:
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
@@ -243,14 +210,12 @@ class ProdWindow(QDialog,QWidget): # 제품관리 시스템 코드
             else:
                 return False
 
-            self.makeTable(teamprod)  # 새로 생성한 리스트를 파라미터로 전달
+            self.makeTable(teamprod) 
         except oci.DatabaseError as e:
             QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
         finally:
             cursor.close()
             conn.close()
-    
-    
     
 
 
@@ -263,75 +228,34 @@ class ProdSubWindow(QDialog,QWidget): # 제품관리 시스템 코드
         self.show()
     
     def initUi(self):
-        uic.loadUi('./mini_pro1/delivery6.ui',self)
+        uic.loadUi('./mini_pro1/delivery.ui',self)
         self.setWindowTitle('상품 확인 시스템(배달기사 전용)')
+        self.btn_search_d.clicked.connect(self.btn_search_d_click)
 
-    
+    # 검색 버튼 
+    def btn_search_d_click(self):
+        deliverydate = self.prod_delivery.text().strip()  # 공백 제거
 
+        # 입력값 검증
+        if not deliverydate:
+            QMessageBox.warning(self, '경고', '발주현황 조회시 도착일 입력은 필수입니다!')
+            return
 
-class DeliveryWindow(QDialog,QWidget): #발주 시스템 코드
-    # 테이블 생성하지 않음 QT디자이너로 완성 하면서 연결 예정 3.26 11시 54분
-    def __init__(self):
-        super(DeliveryWindow,self).__init__()
-        self.initUi()
-        self.show()
+        # 날짜 형식 확인
+        from datetime import datetime
+        try:
+            datetime.strptime(deliverydate, '%Y-%m-%d')  # 'YYYY-MM-DD' 형식 확인
+        except ValueError:
+            QMessageBox.warning(self, '경고', '도착일은 YYYY-MM-DD 형식으로 입력해야 합니다!')
+            return
+        success = self.searchDeliveryData(deliverydate)
+        if success:
+            QMessageBox.information(self, '성공', '조회가 성공적으로 완료되었습니다!')
+        else:
+            QMessageBox.about(self, '검색실패', '관리자에게 문의해주세요!')
+            self.DeliveryloadData()
 
-    def initUi(self):
-        uic.loadUi('./mini_pro1/order.ui',self)
-        self.setWindowTitle('발주 신청 및 관리')
-        self.loadData()
-        self.btn_search.clicked.connect(self.btn_search_click)
-        self.btn_add.clicked.connect(self.addData)
-        self.initTable()
-
-    def btn_third_to_second(self): #발주서비스와 상품서비스가 연결되있는 버튼 코드
-        self.hide()                     
-        self.deli_prod = ProdWindow()    
-        self.deli_prod.exec()             
-        self.show()
-    
-    def initTable(self):
-        self.delivery.setColumnCount(3)
-        self.delivery.setHorizontalHeaderLabels(['상품명', '주문일자', '입고일자'])
-        self.delivery.setEditTriggers(self.delivery.NoEditTriggers)
-
-    def makeTable(self, delivery): # 수정 필요 최종 UI뜨면 맞춰 수정 3월27일 오후5시30분
-            self.delivery.setSelectionMode(QAbstractItemView.SingleSelection) # 단일 row선택모드
-            self.delivery.setEditTriggers(QAbstractItemView.NoEditTriggers) #컬럼수 변경금지
-            self.delivery.setColumnCount(3)
-            self.delivery.setRowCount(len(delivery))# 커서에 들어있는 데이터 길이만큼 row 생성
-            self.delivery.setHorizontalHeaderLabels(['상품명','주문일자','입고일자'])
-
-            # 전달받은 cursor를 반복문으로 테이블 위젯에 뿌리는 작업
-            for i, (prod_name,prod_order,prod_delivery) in enumerate(delivery):
-                self.delivery.setItem(i, 0, QTableWidgetItem(str(prod_name))) # oracle number타입은 뿌릴때 str()로 형변환 필요!
-                self.delivery.setItem(i, 1, QTableWidgetItem(prod_order))
-                self.delivery.setItem(i, 2, QTableWidgetItem(prod_delivery))
-                # self.delivery.setItem(i, 3, QTableWidgetItem("생성컬럼명"))
-
-                
-                
-    
-    def btn_search_click(self):
-        name = self.prod_name.text()
-        order = self.prod_orderdate.text()
-        delivery_d = self.prod_delidate.text()
-        
-
-        if name == '' and order == '' and delivery_d == '':
-            self.loadData()
-            return # 함수 빠져나가기
-        else: 
-            self.searchData(name) # 튜플을 파라미터로 전달
-            if self.searchData(name) == True:
-                return
-            else:
-                QMessageBox.about(self,'검색실패','관리자에게 문의해주세요!')
-            self.loadData() #다시 컬럼을 테이블위젯에 띄우기
-            #self.clearInput() #input값 삭제 함수
-
-
-    def loadData(self):
+    def DeliveryloadData(self):
         # DB연결
         try:
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
@@ -345,8 +269,132 @@ class DeliveryWindow(QDialog,QWidget): #발주 시스템 코드
             delivery = cursor.fetchall()  # 모든 결과를 가져옵니다.
 
             self.makeTable(delivery)  # 새로 생성한 리스트를 파라미터로 전달
+        except oci.DatabaseError as e:
+            QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
+        finally:
+            cursor.close()
+            conn.close()
+
+    def searchDeliveryData(self,deliverydate):
+        # DB연결
+        try:
+            conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+            cursor = conn.cursor()
+
+            query = '''
+            SELECT *
+            FROM MINIPROJECT.DELIVERY
+            WHERE PROD_DELIVERY = TO_DATE(:v_deliverydate, 'YYYY-MM-DD')
+            '''
+            cursor.execute(query, {'v_deliverydate': deliverydate})
+            delivery = cursor.fetchall()  # 모든 결과를 가져옵니다.
 
             if delivery:  # 데이터가 존재하면
+                self.makeTable(delivery)
+                return True
+            else:
+                return False
+
+            self.makeTable(delivery)  # 새로 생성한 리스트를 파라미터로 전달
+        except oci.DatabaseError as e:
+            QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
+        finally:
+            cursor.close()
+            conn.close()
+
+    def makeTable(self, delivery): # 수정 필요 최종 UI뜨면 맞춰 수정 3월27일 오후5시30분
+            self.delivery.setSelectionMode(QAbstractItemView.SingleSelection) # 단일 row선택모드
+            self.delivery.setEditTriggers(QAbstractItemView.NoEditTriggers) #컬럼수 변경금지
+            self.delivery.setColumnCount(3)
+            self.delivery.setRowCount(len(delivery))# 커서에 들어있는 데이터 길이만큼 row 생성
+            self.delivery.setHorizontalHeaderLabels(['상품명','주문일','도착예정일'])
+
+            # 전달받은 cursor를 반복문으로 테이블 위젯에 뿌리는 작업
+            for i, (prod_name,prod_order,prod_delivery) in enumerate(delivery):
+                self.delivery.setItem(i, 0, QTableWidgetItem(prod_name)) # oracle number타입은 뿌릴때 str()로 형변환 필요!
+                self.delivery.setItem(i, 1, QTableWidgetItem(str(prod_order)))
+                self.delivery.setItem(i, 2, QTableWidgetItem(str(prod_delivery)))  
+
+class DeliveryWindow(QDialog,QWidget):
+    def __init__(self):
+        super(DeliveryWindow,self).__init__()
+        self.initUi()
+        self.show()
+
+    def initUi(self):
+        uic.loadUi('./mini_pro1/order.ui',self)
+        self.setWindowTitle('발주 신청 및 관리')
+        self.loadData()
+        self.btn_search.clicked.connect(self.btn_search_click)
+        self.btn_add.clicked.connect(self.addData)
+        self.initTable()
+        
+
+    def btn_third_to_second(self): 
+        self.hide()                     
+        self.deli_prod = ProdWindow()    
+        self.deli_prod.exec()             
+        self.show()
+    
+    def initTable(self):
+        self.delivery.setColumnCount(4)
+        self.delivery.setHorizontalHeaderLabels(['상품명', '주문일자', '입고일자','발주수량'])
+        self.delivery.setEditTriggers(self.delivery.NoEditTriggers)
+    
+    def initTable(self):
+        """QTableWidget 초기화"""
+        self.delivery.setColumnCount(4)  
+        self.delivery.setHorizontalHeaderLabels(['상품명', '주문일자', '입고일자', '발주수량'])
+        self.delivery.setEditTriggers(QTableWidget.NoEditTriggers) 
+        self.delivery.setSelectionMode(QTableWidget.SingleSelection)
+    
+    def makeTable(self, delivery): 
+            self.delivery.setSelectionMode(QAbstractItemView.SingleSelection)
+            self.delivery.setEditTriggers(QAbstractItemView.NoEditTriggers) 
+            self.delivery.setColumnCount(4)
+            self.delivery.setRowCount(len(delivery))
+            self.delivery.setHorizontalHeaderLabels(['상품명','주문일자','입고일자','발주수량'])
+
+            
+            for i, (prod_name,prod_order,prod_delivery,amount) in enumerate(delivery):
+                self.delivery.setItem(i, 0, QTableWidgetItem(str(prod_name))) 
+                self.delivery.setItem(i, 1, QTableWidgetItem(prod_order))
+                self.delivery.setItem(i, 2, QTableWidgetItem(prod_delivery))
+                self.delivery.setItem(i, 3, QTableWidgetItem(str(amount)))
+    
+    def btn_search_click(self):
+        name = self.prod_name.text()
+        order = self.prod_orderdate.text()
+        delivery_d = self.prod_delidate.text()
+        
+
+        if name == '' and order == '' and delivery_d == '':
+            self.loadData()
+            return 
+        else: 
+            self.searchData(name) 
+            if self.searchData(name) == True:
+                return
+            else:
+                QMessageBox.about(self,'검색실패','관리자에게 문의해주세요!')
+            self.loadData() 
+
+    def loadData(self):
+        # DB연결
+        try:
+            conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+            cursor = conn.cursor()
+
+            query = '''
+            SELECT *
+            FROM MINIPROJECT.DELIVERY
+            '''
+            cursor.execute(query)
+            delivery = cursor.fetchall() 
+
+            self.makeTable(delivery)  
+
+            if delivery: 
                 self.makeTable(delivery)
                 return True
             else:
@@ -365,14 +413,14 @@ class DeliveryWindow(QDialog,QWidget): #발주 시스템 코드
             cursor = conn.cursor()
 
             query = '''
-            SELECT *
-            FROM MINIPROJECT.DELIVERY
-            where prod_name = :v_name 
+            SELECT prod_name, SYSDATE AS order_date, SYSDATE + 3 AS delivery_date
+                FROM MINIPROJECT.DELIVERY
+              WHERE prod_name = :v_name 
             '''
             cursor.execute(query, {'v_name': name})
-            delivery = cursor.fetchall()  # 모든 결과를 가져옵니다.
+            delivery = cursor.fetchall()  
 
-            if delivery:  # 데이터가 존재하면
+            if delivery:
                 self.makeTable(delivery)
                 return True
             else:
@@ -383,92 +431,55 @@ class DeliveryWindow(QDialog,QWidget): #발주 시스템 코드
         finally:
             cursor.close()
             conn.close()
-    
-    def addData(self):
-    # QLineEdit에서 값 가져오기
-        prod_name = self.prod_name.text()  # 상품명 입력 필드
-        quantity = self.prod_amount.text()  # 수량 입력 필드
 
-        if not prod_name or not quantity:
-            QMessageBox.warning(self, "경고", "상품명과 수량을 모두 입력하세요!")
+    def addData(self):
+        prod_name = self.prod_name.text()  
+        amount = self.prod_amount.text()  
+
+        if not prod_name or not amount:
+            QMessageBox.warning(self, "경고", "상품명과 수량을 입력하세요!")
             return
 
-        # DB 연결 및 쿼리 실행
         try:
+            # Oracle DB 연결
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
 
-            # 테이블에서 데이터 가져오기
+            # 테이블 업데이트 쿼리 작성
             query = '''
-            SELECT prod_name, SYSDATE AS order_date, SYSDATE + 3 AS delivery_date
-            FROM MINIPROJECT.DELIVERY
-            WHERE prod_name = :v_name
-
-            
-            
+            INSERT INTO MINIPROJECT.DELIVERY 
+		        (prod_name,prod_order,prod_delivery,amount)
+	        VALUES (:v_prod_name,sysdate,sysdate+3,:v_amount)
             '''
-            cursor.execute(query, {'v_name': prod_name})
-            delivery = cursor.fetchall()  # 결과 가져오기
+            cursor.execute(query, {'v_prod_name': prod_name, 'v_amount': amount})
+            conn.commit()  # 트랜잭션 커밋
 
-            if delivery:
-                # 데이터를 테이블 위젯에 표시
-                self.deliveryTable(delivery, quantity)
+            query = '''
+            SELECT prod_name, prod_order, prod_delivery, amount
+            FROM MINIPROJECT.delivery
+            WHERE prod_name = :v_prod_name
+            '''
+            cursor.execute(query, {'v_prod_name': prod_name})
+            updated_rows = cursor.fetchall()  # 업데이트된 데이터 가져오기
+
+            if updated_rows:
+                self.displayUpdates(updated_rows)
+                QMessageBox.information(self, "성공", "주문이 성공적으로 업데이트되었습니다!")
             else:
-                QMessageBox.information(self, '정보', '해당 상품명이 존재하지 않습니다.')
+                QMessageBox.information(self, "정보", "해당 상품명이 존재하지 않습니다.")
 
         except oci.DatabaseError as e:
-            QMessageBox.critical(self, 'DB 오류', f'오류: {e}')
+            QMessageBox.critical(self, "DB 오류", f"오류: {e}")
         finally:
             cursor.close()
             conn.close()
 
-    def deliveryTable(self, delivery, additional_input):
-        """
-        QTableWidget에 데이터를 표시
-        """
-        # 테이블 헤더 초기화 및 컬럼 설정
-        self.delivery.setColumnCount(4)
-        self.delivery.setHorizontalHeaderLabels(['상품명', '주문일자', '입고일자', '발주수량'])
+    def displayUpdates(self, rows):
 
-        self.delivery.setRowCount(len(delivery))
-        for i, (prod_name, order_date, delivery_date) in enumerate(delivery):
-            # 기존 컬럼 데이터 추가
-            self.delivery.setItem(i, 0, QTableWidgetItem(str(prod_name)))
-            self.delivery.setItem(i, 1, QTableWidgetItem(str(order_date)))
-            self.delivery.setItem(i, 2, QTableWidgetItem(str(delivery_date)))
-
-            # QLineEdit에서 입력받은 수량 추가
-            if additional_input:
-                self.delivery.setItem(i, 3, QTableWidgetItem(str(additional_input)))
-        # try:
-        #     conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
-        #     cursor = conn.cursor()
-
-        #     # 테이블값 변경
-        #     query = '''
-        #     UPDATE MINIPROJECT.DELIVERY SET
-       #            prod_name = :v_name
-       #          , prod_order = :v_order
-       #          , prod_delivery = :v_delivery
-       #          , prod_amount = :v_amount
-        #      WHERE a = :v_name, b = :v_order, c = :v_delivery, d = :v_amount
-            
-        #     '''
-        #     cursor.execute(query, {'v_name': prod_name,'v_order':order_date,'v_delivery':delivery_date,'v_amount':additional_input})
-        #     delivery = cursor.fetchall()  # 결과 가져오기
-
-        #     if delivery:
-        #         # 데이터를 테이블 위젯에 표시
-        #         self.deliveryTable(delivery)
-        #     else:
-        #         QMessageBox.information(self, '정보', '해당 상품명이 존재하지 않습니다.')
-
-        # except oci.DatabaseError as e:
-        #     QMessageBox.critical(self, 'DB 오류', f'오류: {e}')
-        # finally:
-        #     cursor.close()
-        #     conn.close()
-
+        self.delivery.setRowCount(len(rows))  
+        for i, row in enumerate(rows):
+            for j, value in enumerate(row):
+                self.delivery.setItem(i, j, QTableWidgetItem(str(value)))
 
 
 if __name__ == '__main__':
@@ -476,9 +487,3 @@ if __name__ == '__main__':
     win = MainWindow()
     win.show()
     app.exec()
-
-
-
-
-
-

@@ -234,3 +234,49 @@ class InventoryApp(QMainWindow):
             import sys
 from PyQt5.QtWidgets import QApplication, QLabel, QTableWidget, QTableWidgetItem, QVBoxLayout, QMainWindow, QWidget
 from PyQt5.QtGui import QPixmap
+
+
+
+
+
+
+
+#===============================================================================
+ # def btn_mod_click(self):
+    #     std_id = self.input_std_id.text()
+    #     std_name = self.input_std_name.text()
+    #     std_mobile = self.input_std_mobile.text()
+    #     std_regyear = self.input_std_regyear.text()
+    #     #print(std_id, std_name,std_mobile,std_regyear)
+
+    #     if std_id == '' or std_name == '' or std_mobile == '' or std_regyear == '':
+    #         QMessageBox.about(self,'경고','학생이름 또는 입학년도는 필수입니다!')
+    #         return 
+    #     else:
+    #         print('DB수정진행')    
+    #         values = (std_name,std_mobile,std_regyear,std_id)
+    #         if self.modData(values) == True:
+    #             QMessageBox.about(self,'수정성공','학생정보 수정완료!')
+    #         else:
+    #             QMessageBox.about(self,'수정실패','관리자에게 문의해주세요!')
+
+    #         self.loadData() 
+    #         self.clearInput()
+    
+    # def btn_del_click(self):
+    #     std_id = self.input_std_id.text()
+        
+    #     if std_id == '':
+    #         QMessageBox.warning(self,'경고','학생이름 또는 입학년도는 필수입니다!')
+    #         return 
+    #     else:
+    #         print('DB삭제진행')
+    #         # Oracle은 파라미터 타입에 민감. 정확한 타입을 사용해야함
+    #         values = (int(std_id),)
+    #         if self.delData(values) == True:
+    #             QMessageBox.about(self,'삭제성공','학생정보 삭제완료!')
+    #         else:
+    #             QMessageBox.about(self,'삭제실패','관리자에게 문의해주세요!')
+
+    #         self.loadData() 
+    #         self.clearInput()
