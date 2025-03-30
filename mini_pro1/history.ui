@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>622</width>
-    <height>587</height>
+    <width>627</width>
+    <height>592</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>재고현황</string>
+          <string>판매현황</string>
          </property>
          <widget class="QWidget" name="verticalLayoutWidget_2">
           <property name="geometry">
@@ -118,20 +118,6 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_8">
-             <item>
-              <widget class="QLabel" name="label_prod_adult">
-               <property name="text">
-                <string>구매연령제한</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="prod_adult"/>
-             </item>
-            </layout>
-           </item>
-           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_6">
              <item>
               <widget class="QLabel" name="label_prod_amount">
@@ -154,7 +140,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QPushButton" name="btn_search">
+         <widget class="QPushButton" name="btn_add">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -170,7 +156,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>검색</string>
+           <string>등록</string>
           </property>
          </widget>
          <widget class="QPushButton" name="pushButton_2">
@@ -189,7 +175,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>발주</string>
+           <string>재고</string>
           </property>
          </widget>
          <widget class="QPushButton" name="pushButton_3">
@@ -208,20 +194,26 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>판매</string>
+           <string>발주</string>
           </property>
          </widget>
-         <widget class="QLabel" name="prod_img">
+         <widget class="QPushButton" name="btn_del">
           <property name="geometry">
            <rect>
-            <x>370</x>
-            <y>30</y>
-            <width>210</width>
-            <height>220</height>
+            <x>70</x>
+            <y>20</y>
+            <width>71</width>
+            <height>21</height>
            </rect>
           </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
-           <string/>
+           <string>취소</string>
           </property>
          </widget>
         </widget>
@@ -245,7 +237,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QTableWidget" name="teamprod">
+       <widget class="QTableWidget" name="history">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -265,15 +257,15 @@
    <sender>pushButton_2</sender>
    <signal>clicked()</signal>
    <receiver>Form</receiver>
-   <slot>btn_second_to_third()</slot>
+   <slot>btn_forth_to_second()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>510</x>
-     <y>23</y>
+     <x>501</x>
+     <y>21</y>
     </hint>
     <hint type="destinationlabel">
-     <x>611</x>
-     <y>277</y>
+     <x>618</x>
+     <y>192</y>
     </hint>
    </hints>
   </connection>
@@ -281,21 +273,21 @@
    <sender>pushButton_3</sender>
    <signal>clicked()</signal>
    <receiver>Form</receiver>
-   <slot>btn_second_to_forth()</slot>
+   <slot>btn_forth_to_third()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>572</x>
-     <y>27</y>
+     <x>569</x>
+     <y>21</y>
     </hint>
     <hint type="destinationlabel">
-     <x>613</x>
-     <y>76</y>
+     <x>615</x>
+     <y>86</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>btn_second_to_third()</slot>
-  <slot>btn_second_to_forth()</slot>
+  <slot>btn_forth_to_second()</slot>
+  <slot>btn_forth_to_third()</slot>
  </slots>
 </ui>

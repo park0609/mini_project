@@ -182,6 +182,7 @@ self."테이블 명".doubleClicked.connect(self.tblstudentDoubleClick) # 안에�
         return cursor.fetchone()  # 세션 정보 반환
 
 #====================================================================================================
+# 이미지 주소는 절대주소
 class InventoryApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -280,3 +281,61 @@ from PyQt5.QtGui import QPixmap
 
     #         self.loadData() 
     #         self.clearInput()
+
+    #     self.line_edit.setPlaceholderText("텍스트를 입력하세요")
+    #     self.prod_img = QLabel(self)
+    #     self.prod_img.setPixmap(QPixmap())
+    #     self.btn_search.clicked.connect(self.update_image)
+    #     layout = QVBoxLayout()
+    #     layout.addWidget(self.prod_img)
+    #     layout.addWidget(self.prod_name)
+    #     layout.addWidget(self.btn_search)
+    #     container = QWidget()
+    #     self.setCentralWidget(container)
+    #     container.setLayout(layout)
+    
+    # def update_image(self):
+    #     search = self.btn_search.text()
+    #     image = self.get_image_path(search)
+
+    #     if image:
+    #         pixmap = QPixmap(image)
+    #         self.prod_img.setPixmap(pixmap)
+    #     else:
+    #         self.prod_img.setText('not image')
+    
+    # def get_image_path(self, prod_name):
+
+    #     image_mapping = {
+    #         "binch" :"mini_pro1\\image\\image\\binch.jpg"
+    #     }
+    #     return image_mapping.get(prod_name, None)
+
+        # self.setGeometry(100, 100, 600, 400)
+        # main_widget = QWidget(self)
+        # self.setCentralWidget(main_widget)
+        # layout = QVBoxLayout(main_widget)
+
+        # self.product_table = QTableWidget()
+        # self.product_table.setRowCount(3)  # 예시용 3개의 제품
+        # self.product_table.setColumnCount(2)  # 제품명과 이미지 경로
+        # self.product_table.setHorizontalHeaderLabels(["제품명", "이미지 경로"])
+        # layout.addWidget(self.product_table)
+
+        # # 테이블에 데이터 추가
+        # self.product_table.setItem(0, 0, QTableWidgetItem("제품 A"))
+        # self.product_table.setItem(0, 1, QTableWidgetItem("./images/product_a.png"))
+        # self.product_table.setItem(1, 0, QTableWidgetItem("제품 B"))
+        # self.product_table.setItem(1, 1, QTableWidgetItem("./images/product_b.png"))
+        # self.product_table.setItem(2, 0, QTableWidgetItem("제품 C"))
+        # self.product_table.setItem(2, 1, QTableWidgetItem("./images/product_c.png"))
+
+        # # QLabel: 제품 이미지 표시
+        # self.image_label = QLabel("이미지가 여기에 표시됩니다.")
+        # self.image_label.setFixedSize(300, 300)
+        # self.image_label.setStyleSheet("border: 1px solid black;")  # 테두리 추가
+        # self.image_label.setScaledContents(True)  # 이미지 크기를 QLabel 크기에 맞춤
+        # layout.addWidget(self.image_label)
+
+        # # 테이블에서 행을 선택했을 때 이벤트 연결
+        # self.product_table.cellClicked.connect(self.update_image)

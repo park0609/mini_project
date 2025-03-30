@@ -1,0 +1,148 @@
+class ProdSubWindow(QDialog,QWidget): 
+    def __init__(self):
+        super(ProdSubWindow,self).__init__()
+        self.initUi()
+        self.show()
+    
+    def initUi(self):
+        uic.loadUi('./mini_pro1/delivery.ui',self)
+        self.setWindowTitle('상품 확인 시스템(배달기사 전용)')
+        self.btn_search_d.clicked.connect(self.btn_search_d_click)
+
+    def btn_search_d_click(self, deliverydate):
+        deliverydate = self.prod_delivery.text()  
+
+        if not deliverydate:
+            QMessageBox.warning(self, '경고', '발주현황 조회시 도착일 입력은 필수입니다!')
+            return
+        try:
+            datetime.strptime(deliverydate, '%Y-%m-%d')  
+        except ValueError:
+            QMessageBox.warning(self, '경고', '도착일은 YYYY-MM-DD 형식으로 입력해야 합니다!')
+            return
+        success = self.searchDeliveryData(deliverydate)
+        if success:
+            QMessageBox.information(self, '성공', '조회가 성공적으로 완료되었습니다!')
+        else:
+            QMessageBox.about(self, '검색실패', '관리자에게 문의해주세요!')
+            self.DeliveryloadData()
+
+    def DeliveryloadData(self):
+        # DB연결
+        try:
+            conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+            cursor = conn.cursor()
+            query = '''
+            SELECT *
+            FROM MINIPROJECT.DELIVERY4
+            '''
+            cursor.execute(query)
+            delivery = cursor.fetchall()  
+            self.makeTable(delivery)  
+        except oci.DatabaseError as e:
+            QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
+        finally:
+            cursor.close()
+            conn.close()
+
+    def searchDeliveryData(self, deliverydate):
+        try:
+            conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+            cursor = conn.cursor()
+            query = '''
+            SELECT *
+            FROM MINIPROJECT.DELIVERY4
+            WHERE PROD_DELIVERY = TO_date(:v_deliverydate, 'YYYY-MM-DD')
+            '''
+            cursor.execute(query, {'v_deliverydate': deliverydate})
+            delivery = cursor.fetchall() 
+            if delivery:  
+                self.makeTable(delivery)
+                return True
+            else:
+                return False
+        except oci.DatabaseError as e:
+            QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
+        finally:
+            cursor.close()
+            conn.close()
+
+    def makeTable(self, delivery): 
+            self.delivery.setSelectionMode(QAbstractItemView.SingleSelection) 
+            self.delivery.setEditTriggers(QAbstractItemView.NoEditTriggers) 
+            self.delivery.setColumnCount(4)
+            self.delivery.setRowCount(len(delivery))
+            self.delivery.setHorizontalHeaderLabels(['상품명','주문일','도착예정일','발주수량'])
+
+            for i, (prod_name,prod_order,prod_delivery,amount) in enumerate(delivery):
+                self.delivery.setItem(i, 0, QTableWidgetItem(prod_name)) 
+                self.delivery.setItem(i, 1, QTableWidgetItem(str(prod_order)))
+                self.delivery.setItem(i, 2, QTableWidgetItem(str(prod_delivery)))
+                self.delivery.setItem(i, 3, QTableWidgetItem(str(amount)))
+
+
+
+
+CREATE TABLE DELIVERY4(
+			prod_name varchar2(20) PRIMARY KEY NOT NULL
+	      , prod_order DATE
+	      , prod_delivery DATE
+		  , amount number);
+
+SELECT * FROM delivery4;
+
+INSERT ALL
+  INTO DELIVERY4 VALUES('cheetos','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('cornchip','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('pringles','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('vicpie','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('zec','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('bananakick','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('potatochip','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('doritos','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('pepero','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('binch','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('kicker','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('butterwaffle','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('postick','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('chocopie','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('caprisun','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('welch''s','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('pepsi','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('milkiss','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('delmont','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('liptin','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('hotsix','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('pocarisweat','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('demisoda','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('narangd','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('shinramen','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('neoguri','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('jjapaghetti','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('jinramen','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('chamggae','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('yeulramen','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('ggoggomen','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('jinro','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('chamisul','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('saero','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('chueum','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('hite','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('terra','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('cloud','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('crush','2025-03-22','2025-03-25','') 
+  INTO DELIVERY4 VALUES('esse','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('theone','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('marlboro','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('cammel','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('mevius','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('sevenstar','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('kleenex','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('poppy','2025-03-08','2025-03-11','')
+  INTO DELIVERY4 VALUES('oralb','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('dentimate','2025-03-01','2025-03-04','')
+  INTO DELIVERY4 VALUES('sensodyne','2025-03-15','2025-03-18','')
+  INTO DELIVERY4 VALUES('perio','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('elastine','2025-03-22','2025-03-25','')
+  INTO DELIVERY4 VALUES('kerasys','2025-03-22','2025-03-25','')
+SELECT * FROM Dual;
