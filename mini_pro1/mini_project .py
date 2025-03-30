@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        uic.loadUi('./mini_pro1/mini_main3.ui',self)
+        uic.loadUi('./mini_pro1/main.ui',self)
         self.setWindowTitle('편의점 물품 관리 시스템')
     
         self.btn_login.clicked.connect(self.btn_login_click)
@@ -69,7 +69,7 @@ class ProdWindow(QDialog,QWidget):
         self.show()
 
     def initUi(self):
-        uic.loadUi('./mini_pro1/final3.ui',self)
+        uic.loadUi('./mini_pro1/teamprod.ui',self)
         self.setWindowTitle('상품 확인 및 관리 시스템')
         self.loadData()
         self.btn_search.clicked.connect(self.btn_search_click)
@@ -489,7 +489,7 @@ class HistoryWindow(QDialog, QWidget):
         self.show()
 
     def initUi(self):
-        uic.loadUi('./mini_pro1/history2.ui', self)
+        uic.loadUi('./mini_pro1/history.ui', self)
         self.setWindowTitle('상품판매 시스템')
         self.loadData()
         self.btn_add.clicked.connect(self.btn_add_click)

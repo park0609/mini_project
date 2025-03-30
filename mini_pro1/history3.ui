@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>history3</class>
- <widget class="QWidget" name="history3">
+ <class>history</class>
+ <widget class="QWidget" name="history">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>654</width>
-    <height>578</height>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="3" column="0">
-       <widget class="QTableWidget" name="history">
+       <widget class="QTableWidget" name="history_2">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -141,7 +141,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QPushButton" name="btn_add">
+           <widget class="QPushButton" name="btn_add_2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -154,7 +154,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btn_del">
+           <widget class="QPushButton" name="btn_del_2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -240,7 +240,7 @@
   <connection>
    <sender>pushButton_3</sender>
    <signal>clicked()</signal>
-   <receiver>history3</receiver>
+   <receiver>history</receiver>
    <slot>btn_forth_to_second()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -256,7 +256,7 @@
   <connection>
    <sender>pushButton_4</sender>
    <signal>clicked()</signal>
-   <receiver>history3</receiver>
+   <receiver>history</receiver>
    <slot>btn_forth_to_third()</slot>
    <hints>
     <hint type="sourcelabel">
