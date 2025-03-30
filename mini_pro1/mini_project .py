@@ -18,6 +18,7 @@ main_id = ['sumin0759@gmail.com','dongho7736@gmail.com','a']
 deli_id = ['guppy135@naver.com','rudwnzlxl6@naver.com',"b"]
 pwd = ['123456']
 
+# 로그인 화면 창
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -26,13 +27,15 @@ class MainWindow(QMainWindow):
     def initUI(self):
         uic.loadUi('./mini_pro1/main.ui',self)
         self.setWindowTitle('편의점 물품 관리 시스템')
-    
         self.btn_login.clicked.connect(self.btn_login_click)
 
-    def btn_login_click(self):
-        login_id = self.input_prod_id.text()
-        login_pwd = self.input_prod_pwd.text()
+    def clearInput(self):
+        self.input_id.clear() 
+        self.input_pwd.clear()  
 
+    def btn_login_click(self):
+        login_id = self.input_id.text()
+        login_pwd = self.input_pwd.text()
         if (login_id == '') and (login_pwd == ''):
             QMessageBox.about(self,'경고','아이디와 비밀번호 모두 기입하시오!')           
             return 
@@ -49,7 +52,43 @@ class MainWindow(QMainWindow):
             self.btn_main_to_sub()
             return
         else: pass
+        T_ID = self.input_id.text()
+        T_PW = self.input_pwd.text()
 
+        if T_ID == '' or T_PW == '':
+            QMessageBox.warning(self, '경고', '아이디,비밀번호 입력은 필수 입니다!')
+            return  
+        else:
+            print('로그인 진행!') 
+            values = (T_ID, T_PW)
+            if self.addData(values) == True:  
+                QMessageBox.about(self, '로그인 성공!', '선생님 어서오세요! ')
+            else: 
+                QMessageBox.about(self, '로그인 실패!', '로그인 실패, 관리자에게 문의하세요.')
+        self.clearInput()
+
+    def addData(self, values):
+        isSucceed = False  
+        conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+        cursor = conn.cursor()
+        try:
+            query = '''
+                    SELECT COUNT(*)
+                      FROM MINIPRO.cmemberlist
+                     WHERE USER_ID = :v_T_ID
+                       AND USER_PW = :v_T_PW
+                    '''
+            cursor.execute(query, {'v_T_ID': values[0], 'v_T_PW': values[1]})
+            result = cursor.fetchone()
+            if result[0] > 0:
+                isSucceed = True
+        except Exception as e:
+            print(f"❌ 오류 발생: {e}")
+        finally:
+            cursor.close()
+            conn.close()
+        return isSucceed  
+    
     def btn_main_to_second(self):
         self.prod = ProdWindow()
         self.prod.show()                
@@ -62,6 +101,7 @@ class MainWindow(QMainWindow):
         self.close()                       
         self.deleteLater() 
 
+# 제품조회 창
 class ProdWindow(QDialog,QWidget): 
     def __init__(self):
         super(ProdWindow,self).__init__()
@@ -267,6 +307,7 @@ class ProdSubWindow(QDialog,QWidget):
                 self.delivery.setItem(i, 2, QTableWidgetItem(str(prod_delivery)))
                 self.delivery.setItem(i, 3, QTableWidgetItem(str(amount)))  
 
+# 발주조회 창
 class DeliveryWindow(QDialog,QWidget):
     def __init__(self):
         super(DeliveryWindow,self).__init__()
@@ -483,6 +524,7 @@ class DeliveryWindow(QDialog,QWidget):
             for j, value in enumerate(row):
                 self.delivery.setItem(i, j, QTableWidgetItem(str(value)))
 
+# 판매 화면 창
 class HistoryWindow(QDialog, QWidget):
     def __init__(self):
         super(HistoryWindow, self).__init__()
@@ -494,6 +536,7 @@ class HistoryWindow(QDialog, QWidget):
         self.setWindowTitle('상품판매 시스템')
         self.loadData()
         self.btn_add.clicked.connect(self.btn_add_click)
+        self.btn_del.clicked.connect(self.btn_del_click)
     
     def btn_forth_to_second(self): 
         self.deli_prod = ProdWindow()                     
@@ -523,8 +566,8 @@ class HistoryWindow(QDialog, QWidget):
     def btn_add_click(self):
         category = self.prod_category.text()
         name = self.prod_name.text()
-        amount = self.prod_amount.text()
-        price = self.prod_price.text()
+        amount = self.cell_amount.text()
+        price = self.cell_price.text()
         if  category == '' and name == ''and price == ''and amount == '':
             self.loadData()
             return 
@@ -535,6 +578,16 @@ class HistoryWindow(QDialog, QWidget):
                 pass
             self.loadData() 
 
+    def btn_del_click(self):
+        name = self.prod_name.text()
+        if name == '':
+            QMessageBox.warning(self,'경고','제품이름은 필수입니다!')
+            return 
+        else:
+            if self.delData(name) == True:
+                self.loadData()
+            else: pass
+            
     def loadData(self):
         try:
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
@@ -559,8 +612,8 @@ class HistoryWindow(QDialog, QWidget):
     def addData(self,category,name,price,amount):
         category = self.prod_category.text()
         name = self.prod_name.text()
-        amount = self.prod_amount.text()  
-        price = self.prod_price.text()
+        amount = self.cell_amount.text()  
+        price = self.cell_price.text()
         if  not category or not name or not amount or not price:
             QMessageBox.warning(self, "경고", "상품명과 수량을 입력하세요!")
             return
@@ -588,6 +641,25 @@ class HistoryWindow(QDialog, QWidget):
                 QMessageBox.information(self, "정보", "해당 상품명이 존재하지 않습니다.")
         except oci.DatabaseError as e:
             QMessageBox.critical(self, "DB 오류", f"오류: {e}")
+        finally:
+            cursor.close()
+            conn.close()
+
+    def delData(self, name):
+        name = self.prod_name.text()    
+        conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+        cursor = conn.cursor()
+        try:
+            conn.begin() 
+            query = '''
+                    DELETE FROM MINIPRO.history
+                     WHERE prod_name= :v_prod_name
+                    '''
+            cursor.execute(query, {'v_prod_name': name})
+            conn.commit() 
+        except Exception as e:
+            print(e)
+            conn.rollback()    
         finally:
             cursor.close()
             conn.close()
