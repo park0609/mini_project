@@ -17,6 +17,15 @@ basic_msg = '편의점 물품 관리 시스템 v 1.0'
 main_id = ['sumin0759@gmail.com','dongho7736@gmail.com','a']
 deli_id = ['guppy135@naver.com','rudwnzlxl6@naver.com',"b"]
 pwd = ['123456']
+# 로그인 실패 횟수 제한
+login_attempts = 0
+max_attempts = 5
+
+# 자동 로그인 세션 저장용
+session = {'user_id': None, 'role': None}
+
+# 상태 메시지
+basic_msg = '편의점 물품 관리 시스템 v1.0'
 
 # 로그인 화면 창
 class MainWindow(QMainWindow):
@@ -28,6 +37,15 @@ class MainWindow(QMainWindow):
         uic.loadUi('./mini_pro1/main.ui',self)
         self.setWindowTitle('편의점 물품 관리 시스템')
         self.btn_login.clicked.connect(self.btn_login_click)
+        # 버튼 클릭 이벤트 연결
+
+        # 엔터 키로 로그인 실행 (비밀번호 입력칸 기준)
+        self.input_pwd.returnPressed.connect(self.btn_login_click)
+
+        # # 자동 로그인 체크
+        # if session['user_id']:
+        #     self.open_product_window(session['user_id'], session['role'])
+        
 
     def clearInput(self):
         self.input_id.clear() 
@@ -67,27 +85,74 @@ class MainWindow(QMainWindow):
                 QMessageBox.about(self, '로그인 실패!', '로그인 실패, 관리자에게 문의하세요.')
         self.clearInput()
 
-    def addData(self, values):
-        isSucceed = False  
-        conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
-        cursor = conn.cursor()
-        try:
-            query = '''
-                    SELECT COUNT(*)
-                      FROM MINIPRO.cmemberlist
-                     WHERE USER_ID = :v_T_ID
-                       AND USER_PW = :v_T_PW
-                    '''
-            cursor.execute(query, {'v_T_ID': values[0], 'v_T_PW': values[1]})
-            result = cursor.fetchone()
-            if result[0] > 0:
-                isSucceed = True
-        except Exception as e:
-            print(f"❌ 오류 발생: {e}")
-        finally:
-            cursor.close()
-            conn.close()
-        return isSucceed  
+    # def addData(self, values):
+    #     isSucceed = False  
+    #     conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
+    #     cursor = conn.cursor()
+    #     try:
+    #         query = '''
+    #                 SELECT COUNT(*)
+    #                   FROM MINIPRO.cmemberlist
+    #                  WHERE USER_ID = :v_T_ID
+    #                    AND USER_PW = :v_T_PW
+    #                 '''
+    #         cursor.execute(query, {'v_T_ID': values[0], 'v_T_PW': values[1]})
+    #         result = cursor.fetchone()
+    #         if result[0] > 0:
+    #             isSucceed = True
+    #     except Exception as e:
+    #         print(f"❌ 오류 발생: {e}")
+    #     finally:
+    #         cursor.close()
+    #         conn.close()
+    #     return isSucceed  
+    
+ 
+
+    # def btn_login_click(self):
+    #     global login_attempts
+
+    #     login_id = self.input_id.text()
+    #     login_pwd = self.input_pwd.text()
+
+    #     # 로그인 입력 검증
+    #     if not login_id or not login_pwd:
+    #         QMessageBox.warning(self, '경고', '아이디와 비밀번호를 모두 입력하세요!')
+    #         return
+
+    #     # 로그인 확인 및 역할 부여
+    #     if login_id in main_id and login_pwd in pwd:
+    #         QMessageBox.information(self, '로그인 성공', f'어서오세요, {login_id}님!')
+    #         role = 'manager'  # 매니저 역할 부여
+    #         session['user_id'] = login_id
+    #         session['role'] = role
+    #         self.open_product_window(login_id, role)
+
+    #     elif login_id in deli_id and login_pwd in pwd:
+    #         QMessageBox.information(self, '로그인 성공', f'어서오세요, {login_id}님!')
+    #         role = 'deliver'  # 배달기사 역할 부여
+    #         session['user_id'] = login_id
+    #         session['role'] = role
+    #         self.open_sub_window()#login_id, role)
+
+    #     else:
+    #         login_attempts += 1
+    #         if login_attempts >= max_attempts:
+    #             QMessageBox.critical(self, '로그인 차단', '로그인 시도 5회를 초과하여 차단되었습니다.')
+    #             self.close()
+    #         else:
+    #             QMessageBox.warning(self, '경고', f'아이디나 비밀번호가 일치하지 않습니다. ({max_attempts - login_attempts}회 남음)')
+
+    # def open_product_window(self, user_id, role):
+    #     self.hide()
+    #     self.prod_window = ProdWindow(user_id, role)  # user_id와 role 전달
+    #     self.prod_window.exec()
+    #     self.show()
+    
+    # def open_sub_window(self, user_id, role):
+    #     self.hide()
+    #     self.prod_sub_window = DeliveryWindow(user_id, role)
+
     
     def btn_main_to_second(self):
         self.prod = ProdWindow()
@@ -114,6 +179,9 @@ class ProdWindow(QDialog,QWidget):
         self.loadData()
         self.btn_search.clicked.connect(self.btn_search_click)
         self.teamprod.doubleClicked.connect(self.teamprodDoubleClick)
+        self.btn_search.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\find.png'))
+        self.pushButton_2.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\order2.png'))
+        self.pushButton_3.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\sell.png'))
         
     def btn_second_to_third(self): 
         self.prod_deli = DeliveryWindow()  
@@ -237,6 +305,8 @@ class ProdSubWindow(QDialog,QWidget):
         uic.loadUi('./mini_pro1/delivery.ui',self)
         self.setWindowTitle('상품 확인 시스템(배달기사 전용)')
         self.btn_search_d.clicked.connect(self.btn_search_d_click)
+        self.setWindowIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\deli.png'))
+        self.btn_search_d.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\find.png'))
 
     def btn_search_d_click(self, deliverydate):
         deliverydate = self.prod_delivery.text()  
@@ -318,11 +388,16 @@ class DeliveryWindow(QDialog,QWidget):
         uic.loadUi('./mini_pro1/order.ui',self)
         self.setWindowTitle('발주 신청 및 관리')
         self.loadData()
-        self.btn_search.clicked.connect(self.btn_search_click)
+        self.btn_search_2.clicked.connect(self.btn_search_click)
         self.btn_add.clicked.connect(self.addData)
         self.btn_mod.clicked.connect(self.btn_mod_click)
         self.btn_del.clicked.connect(self.btn_del_click)
         self.initTable()
+        self.btn_search_2.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\find.png'))
+        self.btn_add.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\plus.png'))
+        self.btn_mod.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\mod.png'))
+        self.btn_del.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\del.png'))
+        self.pushButton_2.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\order.png'))
         
     def btn_third_to_second(self): 
         self.deli_prod = ProdWindow()                     
@@ -537,6 +612,10 @@ class HistoryWindow(QDialog, QWidget):
         self.loadData()
         self.btn_add.clicked.connect(self.btn_add_click)
         self.btn_del.clicked.connect(self.btn_del_click)
+        self.btn_add.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\plus.png'))
+        self.btn_del.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\del.png'))
+        self.pushButton_3.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\sell.png'))
+        self.pushButton_4.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\order2.png'))
     
     def btn_forth_to_second(self): 
         self.deli_prod = ProdWindow()                     
