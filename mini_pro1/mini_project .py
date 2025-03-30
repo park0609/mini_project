@@ -124,6 +124,7 @@ class ProdWindow(QDialog,QWidget):
         self.prod_price.setText(price)
         self.prod_adult.setText(adult)
         self.prod_amount.setText(amount)
+        self.label.setPixmap(QtGui.QPixmap(prodname[name])) 
 
     def btn_search_click(self):
         number = self.prod_number.text()
