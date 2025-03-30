@@ -5,35 +5,18 @@ from PyQt5 import QtWidgets, QtGui, uic
 from datetime import datetime
 import cx_Oracle as oci
 import uuid
+from prod import prodname
 
-
-#매니저 연결
+#DB연결
 sid_m = 'XE'
-host_m = 'localhost'
+host_m = '210.119.14.67'
 port_m = 1521
-username_m = 'system'
-password_m = 'oracle'
-
-#스태프 연결
-sid_s = 'XE'
-host_s = 'localhost'
-port_s = 1521
-username_s = 'staff'
-password_s = '12345'
-
-#배달기사 연결
-sid_d = 'XE'
-host_d = 'localhost'
-port_d = 1521
-username_d = 'deliver'
-password_d = '12345'
-
+username_m = 'MINIPRO'
+password_m = '12345'
 basic_msg = '편의점 물품 관리 시스템 v 1.0'
 main_id = ['sumin0759@gmail.com','dongho7736@gmail.com','a']
 deli_id = ['guppy135@naver.com','rudwnzlxl6@naver.com',"b"]
 pwd = ['123456']
-
-a = {"zec":"C:\\Source\\mini_project\\mini_pro1\\image\\image\\zec.jpg"}
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -41,7 +24,7 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        uic.loadUi('./mini_pro1/mini_main2.ui',self)
+        uic.loadUi('./mini_pro1/mini_main3.ui',self)
         self.setWindowTitle('편의점 물품 관리 시스템')
     
         self.btn_login.clicked.connect(self.btn_login_click)
@@ -86,13 +69,12 @@ class ProdWindow(QDialog,QWidget):
         self.show()
 
     def initUi(self):
-        uic.loadUi('./mini_pro1/final.ui',self)
+        uic.loadUi('./mini_pro1/final3.ui',self)
         self.setWindowTitle('상품 확인 및 관리 시스템')
         self.loadData()
         self.btn_search.clicked.connect(self.btn_search_click)
         self.teamprod.doubleClicked.connect(self.teamprodDoubleClick)
         
-
     def btn_second_to_third(self): 
         self.prod_deli = DeliveryWindow()  
         self.prod_deli.show()
@@ -152,8 +134,11 @@ class ProdWindow(QDialog,QWidget):
             return 
         else: 
             if self.searchData(name,number,category) == True:
-                text = self.prod_name.text()
-                self.prod_img.setPixmap(QtGui.QPixmap(a[text])) 
+                if name == '':
+                    self.label.setPixmap(QtGui.QPixmap(prodname[number])) 
+                elif number == '':    
+                    self.label.setPixmap(QtGui.QPixmap(prodname[name]))
+                else: pass 
                 return
             else:
                 QMessageBox.about(self,'검색실패','관리자에게 문의해주세요!')
@@ -166,11 +151,12 @@ class ProdWindow(QDialog,QWidget):
             cursor = conn.cursor()
             query = '''
             SELECT *
-            FROM MINIPROJECT.TEAMPROD
+            FROM MINIPRO.TEAMPROD
             '''
             cursor.execute(query)
             teamprod = cursor.fetchall()  
-            self.makeTable(teamprod) 
+            self.makeTable(teamprod)
+            self.label.setPixmap(QtGui.QPixmap('C:\\Source\\mini_project\\mini_pro1\\200image\\normal.png')) 
         except oci.DatabaseError as e:
             QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
         finally:
@@ -183,7 +169,7 @@ class ProdWindow(QDialog,QWidget):
             cursor = conn.cursor()
             query = '''
             SELECT *
-            FROM MINIPROJECT.TEAMPROD
+            FROM MINIPRO.TEAMPROD
             where prod_name = :v_name or prod_number = :v_number or prod_category = :v_category
             '''
             cursor.execute(query, {'v_name': name,'v_number':number,'v_category':category})
@@ -199,8 +185,6 @@ class ProdWindow(QDialog,QWidget):
             cursor.close()
             conn.close()
     
-        
-
 # 배달기사 전용 화면
 class ProdSubWindow(QDialog,QWidget): 
     def __init__(self):
@@ -215,7 +199,6 @@ class ProdSubWindow(QDialog,QWidget):
 
     def btn_search_d_click(self, deliverydate):
         deliverydate = self.prod_delivery.text()  
-
         if not deliverydate:
             QMessageBox.warning(self, '경고', '발주현황 조회시 도착일 입력은 필수입니다!')
             return
@@ -232,13 +215,12 @@ class ProdSubWindow(QDialog,QWidget):
             self.DeliveryloadData()
 
     def DeliveryloadData(self):
-        # DB연결
         try:
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
             query = '''
             SELECT *
-            FROM MINIPROJECT.DELIVERY4
+            FROM MINIPRO.DELIVERY
             '''
             cursor.execute(query)
             delivery = cursor.fetchall()  
@@ -255,7 +237,7 @@ class ProdSubWindow(QDialog,QWidget):
             cursor = conn.cursor()
             query = '''
             SELECT prod_name, prod_order, substr(to_char(prod_delivery, 'YYYY-MM-DD'), 1, 10), amount
-            FROM MINIPROJECT.DELIVERY4
+            FROM MINIPRO.DELIVERY
             WHERE PROD_DELIVERY = TO_date(:v_deliverydate , 'YYYY-MM-DD')
             '''
             cursor.execute(query, {'v_deliverydate': deliverydate})
@@ -306,7 +288,6 @@ class DeliveryWindow(QDialog,QWidget):
         self.close()                
         self.deleteLater()
 
-    
     def initTable(self):
         self.delivery.setColumnCount(4)
         self.delivery.setHorizontalHeaderLabels(['상품명', '주문일자', '입고일자','발주수량'])
@@ -324,7 +305,6 @@ class DeliveryWindow(QDialog,QWidget):
             self.delivery.setColumnCount(4)
             self.delivery.setRowCount(len(delivery))
             self.delivery.setHorizontalHeaderLabels(['상품명','주문일자','입고일자','발주수량'])
-
             for i, (prod_name,prod_order,prod_delivery,amount) in enumerate(delivery):
                 self.delivery.setItem(i, 0, QTableWidgetItem(str(prod_name))) 
                 self.delivery.setItem(i, 1, QTableWidgetItem(str(prod_order)))
@@ -351,7 +331,6 @@ class DeliveryWindow(QDialog,QWidget):
             self.loadData()
             return 
         else: 
-            self.modData(name,amount) 
             if self.modData(name,amount) == True:
                 return
             else: 
@@ -364,26 +343,22 @@ class DeliveryWindow(QDialog,QWidget):
             self.loadData()
             return 
         else:
-            self.delData(name)
             if self.delData(name) == True:
                 QMessageBox.about(self,'삭제성공','학생정보 삭제완료!')
             else:
                 QMessageBox.about(self,'삭제실패','관리자에게 문의해주세요!')
-
             self.loadData() 
 
     def loadData(self):
-        # DB연결
         try:
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
             query = '''
             SELECT prod_name, prod_order, substr(to_char(prod_delivery, 'YYYY-MM-DD'),1 , 10), amount
-            FROM MINIPROJECT.DELIVERY4
+            FROM MINIPRO.DELIVERY
             '''
             cursor.execute(query)
             delivery = cursor.fetchall() 
-            self.makeTable(delivery)  
             if delivery: 
                 self.makeTable(delivery)
                 return True
@@ -396,13 +371,12 @@ class DeliveryWindow(QDialog,QWidget):
             conn.close()
 
     def searchData(self, name):
-        # DB연결
         try:
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
             query = '''
             SELECT *
-                FROM MINIPROJECT.DELIVERY4
+                FROM MINIPRO.DELIVERY
               WHERE prod_name = :v_name 
             '''
             cursor.execute(query, {'v_name': name})
@@ -428,7 +402,7 @@ class DeliveryWindow(QDialog,QWidget):
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
             query = '''
-            INSERT INTO MINIPROJECT.DELIVERY4
+            INSERT INTO MINIPRO.DELIVERY
 		        (prod_name,prod_order,prod_delivery,amount)
 	        VALUES (:v_prod_name,trunc(sysdate),trunc(sysdate+3),:v_amount)
             '''
@@ -436,7 +410,7 @@ class DeliveryWindow(QDialog,QWidget):
             conn.commit()  
             query = '''
             SELECT prod_name, prod_order, to_char(prod_delivery, 'YYYY-MM-DD'), amount
-            FROM MINIPROJECT.delivery4
+            FROM MINIPRO.delivery
             WHERE prod_name = :v_prod_name
             '''
             cursor.execute(query, {'v_prod_name': prod_name})
@@ -462,7 +436,7 @@ class DeliveryWindow(QDialog,QWidget):
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
             query = '''
-            UPDATE MINIPROJECT.DELIVERY4 SET
+            UPDATE MINIPRO.DELIVERY SET
   	             amount = :v_amount
                 , prod_order = sysdate 
                 , prod_delivery = sysdate + 3
@@ -470,13 +444,6 @@ class DeliveryWindow(QDialog,QWidget):
             '''
             cursor.execute(query, {'v_name': name, 'v_amount': amount})
             conn.commit()
-            
-            # updated_rows = cursor.fetchall()  
-            # if updated_rows:
-            #     self.makeTable(updated_rows)
-            #     QMessageBox.information(self, "성공", "주문이 성공적으로 업데이트되었습니다!")
-            # else:
-            #     QMessageBox.information(self, "정보", "해당 상품명이 존재하지 않습니다.")
         except oci.DatabaseError as e:
             QMessageBox.critical(self, "DB 오류", f"오류: {e}")
         finally:
@@ -488,13 +455,10 @@ class DeliveryWindow(QDialog,QWidget):
         isSuccede = False 
         conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
         cursor = conn.cursor()
-
         try:
             conn.begin() 
-
-            
             query = '''
-                    UPDATE MINIPROJECT.DELIVERY4 SET
+                    UPDATE MINIPRO.DELIVERY SET
   	                      amount = null
                         , prod_order = null
                         , prod_delivery = null
@@ -502,7 +466,6 @@ class DeliveryWindow(QDialog,QWidget):
                     '''
             cursor.execute(query, {'v_name':name})
             conn.commit() 
-     
             isSuccede = True 
         except Exception as e:
             print(e)
@@ -511,7 +474,6 @@ class DeliveryWindow(QDialog,QWidget):
         finally:
             cursor.close()
             conn.close()
-
         return isSuccede
 
     def displayUpdates(self, rows):
@@ -531,7 +493,6 @@ class HistoryWindow(QDialog, QWidget):
         self.setWindowTitle('상품판매 시스템')
         self.loadData()
         self.btn_add.clicked.connect(self.btn_add_click)
-        # self.btn_search_d.clicked.connect(self.btn_search_d_click)
     
     def btn_forth_to_second(self): 
         self.deli_prod = ProdWindow()                     
@@ -546,12 +507,11 @@ class HistoryWindow(QDialog, QWidget):
         self.deleteLater()
 
     def makeTable(self, history):
-            self.history.setSelectionMode(QAbstractItemView.SingleSelection) # 단일 row선택모드
-            self.history.setEditTriggers(QAbstractItemView.NoEditTriggers) #컬럼수 변경금지
+            self.history.setSelectionMode(QAbstractItemView.SingleSelection)
+            self.history.setEditTriggers(QAbstractItemView.NoEditTriggers)
             self.history.setColumnCount(5)
-            self.history.setRowCount(len(history))# 커서에 들어있는 데이터 길이만큼 row 생성
+            self.history.setRowCount(len(history))
             self.history.setHorizontalHeaderLabels(['판매날짜','상품카테고리','상품명','상품수량','상품가격'])
-
             for i, (cell_date,prod_category,prod_name,cell_amount,cell_price) in enumerate(history):
                 self.history.setItem(i, 0, QTableWidgetItem(str(cell_date))) 
                 self.history.setItem(i, 1, QTableWidgetItem(str(prod_category)))
@@ -564,39 +524,31 @@ class HistoryWindow(QDialog, QWidget):
         name = self.prod_name.text()
         amount = self.prod_amount.text()
         price = self.prod_price.text()
-
         if  category == '' and name == ''and price == ''and amount == '':
             self.loadData()
-            return # 함수 빠져나가기
+            return 
         else: 
             if self.addData(category,name,price,amount) == True:
                 return
             else:
                 pass
-            self.loadData() #다시 컬럼을 테이블위젯에 띄우기
-            #self.clearInput() #input값 삭제 함수
+            self.loadData() 
 
     def loadData(self):
-        # DB연결
         try:
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
-
             query = '''
             SELECT *
-            FROM MINIPROJECT.HISTORY
+            FROM MINIPRO.HISTORY
             '''
             cursor.execute(query)
             history = cursor.fetchall() 
-
-            self.makeTable(history)  
-
             if history: 
                 self.makeTable(history)
                 return True
             else:
                 return False
-
         except oci.DatabaseError as e:
             QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
         finally:
@@ -611,45 +563,39 @@ class HistoryWindow(QDialog, QWidget):
         if  not category or not name or not amount or not price:
             QMessageBox.warning(self, "경고", "상품명과 수량을 입력하세요!")
             return
-
         try:
-            # Oracle DB 연결
             conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
             cursor = conn.cursor()
-
-            # 테이블 업데이트 쿼리 작성
             query = '''
-            INSERT INTO MINIPROJECT.HISTORY 
+            INSERT INTO MINIPRO.HISTORY 
               (cell_date,prod_category,prod_name,cell_amount,cell_price)
            VALUES (sysdate,:v_prod_category,:v_prod_name,:v_cell_amount,:v_cell_price)
             '''
             cursor.execute(query, {'v_prod_category' : category,'v_prod_name': name, 'v_cell_amount': amount, 'v_cell_price' : price})
-            conn.commit()  # 트랜잭션 커밋
-
+            conn.commit()  
             query = '''
             SELECT *
-            FROM MINIPROJECT.HISTORY
+            FROM MINIPRO.HISTORY
             WHERE prod_name = :v_prod_name
             '''
             cursor.execute(query, {'v_prod_name': name})
-            updated_rows = cursor.fetchall()  # 업데이트된 데이터 가져오기
-
+            updated_rows = cursor.fetchall() 
             if updated_rows:
                 self.makeTable(updated_rows)
                 QMessageBox.information(self, "성공", "주문이 성공적으로 업데이트되었습니다!")
             else:
                 QMessageBox.information(self, "정보", "해당 상품명이 존재하지 않습니다.")
-
         except oci.DatabaseError as e:
             QMessageBox.critical(self, "DB 오류", f"오류: {e}")
         finally:
             cursor.close()
             conn.close()
 
-
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
     sys.exit(app.exec_())
+
+
+
