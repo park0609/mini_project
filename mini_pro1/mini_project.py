@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         uic.loadUi('./mini_pro1/main.ui',self)
-        self.setWindowTitle('편의점 물품 관리 시스템')
+        self.setWindowTitle('로그인')
         self.btn_login.clicked.connect(self.btn_login_click)
         self.input_pwd.returnPressed.connect(self.btn_login_click)
 
@@ -116,7 +116,7 @@ class ProdWindow(QDialog,QWidget):
 
     def initUi(self):
         uic.loadUi('./mini_pro1/teamprod.ui',self)
-        self.setWindowTitle('상품 확인 및 관리 시스템')
+        self.setWindowTitle('편의점 재고 관리 시스템 (매니저, 스태프 전용)')
         self.loadData()
         self.btn_search.clicked.connect(self.btn_search_click)
         self.teamprod.doubleClicked.connect(self.teamprodDoubleClick)
@@ -179,16 +179,24 @@ class ProdWindow(QDialog,QWidget):
         number = self.prod_number.text()
         category = self.prod_category.text()
         name = self.prod_name.text()
+        adult = self.prod_adult.text()
+        price = self.prod_price.text()
+        amount = self.prod_amount.text()
+
         if name == '' and category == '' and number == '':
             self.loadData()
             return 
+        elif name != '' and category != '' and number != '' and adult != '' and price != '' and amount != '':
+            self.clearInput()
+            self.loadData()
         else: 
             if self.searchData(name,number,category) == True:
-                if name == '':
+                if name == '' and category == '':
                     self.label.setPixmap(QtGui.QPixmap(prodname[number])) 
-                elif number == '':    
+                elif number == '' and category == '':    
                     self.label.setPixmap(QtGui.QPixmap(prodname[name]))
-                else: pass 
+                else:
+                    self.label.setPixmap(QtGui.QPixmap('C:\\Source\\mini_project\\mini_pro1\\200image\\normal.png')) 
                 return
             else:
                 QMessageBox.about(self,'검색실패','관리자에게 문의해주세요!')
@@ -244,7 +252,7 @@ class ProdSubWindow(QDialog,QWidget):
     
     def initUi(self):
         uic.loadUi('./mini_pro1/delivery.ui',self)
-        self.setWindowTitle('상품 확인 시스템(배달기사 전용)')
+        self.setWindowTitle('편의점 재고 관리 시스템 (배달기사 전용)')
         self.btn_search_d.clicked.connect(self.btn_search_d_click)
         self.setWindowIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\deli.png'))
         self.btn_search_d.setIcon(QIcon('C:\\Source\\mini_project\\mini_pro1\\200image\\find.png'))
@@ -327,7 +335,7 @@ class DeliveryWindow(QDialog,QWidget):
 
     def initUi(self):
         uic.loadUi('./mini_pro1/order.ui',self)
-        self.setWindowTitle('발주 신청 및 관리')
+        self.setWindowTitle('편의점 재고 관리 시스템 (매니저, 스태프 전용)')
         self.loadData()
         self.btn_search_2.clicked.connect(self.btn_search_click)
         self.btn_add.clicked.connect(self.addData)
@@ -356,6 +364,12 @@ class DeliveryWindow(QDialog,QWidget):
         self.delivery.setHorizontalHeaderLabels(['상품명', '주문일자', '입고일자', '발주수량'])
         self.delivery.setEditTriggers(QTableWidget.NoEditTriggers) 
         self.delivery.setSelectionMode(QTableWidget.SingleSelection)
+
+    def clearInput(self):
+        self.prod_name.clear()
+        self.prod_amount.clear()
+        self.prod_orderdate.clear()
+        self.prod_delidate.clear()
     
     def makeTable(self, delivery): 
             self.delivery.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -375,8 +389,8 @@ class DeliveryWindow(QDialog,QWidget):
             self.loadData()
             return 
         else: 
-            self.searchData(name) 
             if self.searchData(name) == True:
+                self.clearInput()
                 return
             else:
                 QMessageBox.about(self,'검색실패','관리자에게 문의해주세요!')
@@ -387,9 +401,11 @@ class DeliveryWindow(QDialog,QWidget):
         amount = self.prod_amount.text()
         if name == '' and amount == '':
             self.loadData()
+            self.clearInput()
             return 
         else: 
             if self.modData(name,amount) == True:
+                self.clearInput()
                 return
             else: 
                 QMessageBox.about(self,'수정성공!','발주수량이 변경되었습니다!')
@@ -399,10 +415,12 @@ class DeliveryWindow(QDialog,QWidget):
         name = self.prod_name.text()
         if name == '':
             self.loadData()
+            self.clearInput()
             return 
         else:
             if self.delData(name) == True:
-                QMessageBox.about(self,'삭제성공','학생정보 삭제완료!')
+                QMessageBox.about(self,'삭제성공','발주정보 삭제완료!')
+                self.clearInput()
             else:
                 QMessageBox.about(self,'삭제실패','관리자에게 문의해주세요!')
             self.loadData() 
@@ -475,7 +493,7 @@ class DeliveryWindow(QDialog,QWidget):
             updated_rows = cursor.fetchall()  
             if updated_rows:
                 self.displayUpdates(updated_rows)
-                QMessageBox.information(self, "성공", "주문이 성공적으로 업데이트되었습니다!")
+                QMessageBox.information(self, "성공", f"{prod_name} {amount}개 주문이 완료되었습니다!")
             else:
                 QMessageBox.information(self, "정보", "해당 상품명이 존재하지 않습니다.")
         except oci.DatabaseError as e:
@@ -549,7 +567,7 @@ class HistoryWindow(QDialog, QWidget):
 
     def initUi(self):
         uic.loadUi('./mini_pro1/history.ui', self)
-        self.setWindowTitle('상품판매 시스템')
+        self.setWindowTitle('편의점 재고 관리 시스템 (매니저, 스태프 전용)')
         self.loadData()
         self.btn_add.clicked.connect(self.btn_add_click)
         self.btn_del.clicked.connect(self.btn_del_click)
@@ -605,8 +623,11 @@ class HistoryWindow(QDialog, QWidget):
             return 
         else:
             if self.delData(name) == True:
+                QMessageBox.information(self, "성공", "삭제완료!")
                 self.loadData()
-            else: pass
+            else:
+                QMessageBox.information(self, "실패", "삭제실패!")
+                self.loadData()
             
     def loadData(self):
         try:
@@ -622,7 +643,8 @@ class HistoryWindow(QDialog, QWidget):
                 self.makeTable(history)
                 return True
             else:
-                return False
+                self.history.setRowCount(0)
+                return True
         except oci.DatabaseError as e:
             QMessageBox.critical(self, 'DB 오류', f'DB 작업 중 오류 발생: {e}')
         finally:
@@ -656,7 +678,7 @@ class HistoryWindow(QDialog, QWidget):
             updated_rows = cursor.fetchall() 
             if updated_rows:
                 self.makeTable(updated_rows)
-                QMessageBox.information(self, "성공", "주문이 성공적으로 업데이트되었습니다!")
+                QMessageBox.information(self, "성공", "판매성공!")
             else:
                 QMessageBox.information(self, "정보", "해당 상품명이 존재하지 않습니다.")
         except oci.DatabaseError as e:
@@ -669,6 +691,7 @@ class HistoryWindow(QDialog, QWidget):
         name = self.prod_name.text()    
         conn = oci.connect(f'{username_m}/{password_m}@{host_m}:{port_m}/{sid_m}')
         cursor = conn.cursor()
+        isSuccede = False 
         try:
             conn.begin() 
             query = '''
@@ -677,12 +700,15 @@ class HistoryWindow(QDialog, QWidget):
                     '''
             cursor.execute(query, {'v_prod_name': name})
             conn.commit() 
+            isSuccede = True 
         except Exception as e:
             print(e)
-            conn.rollback()    
+            conn.rollback() 
+            isSuccede = False
         finally:
             cursor.close()
             conn.close()
+        return isSuccede
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

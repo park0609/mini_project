@@ -72,4 +72,8 @@ SELECT * FROM dual;
 
 COMMIT;
 
+SELECT * FROM teamprod;
+
+SELECT * FROM history;
+
 SELECT * FROM BRAND;
