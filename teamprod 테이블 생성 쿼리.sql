@@ -65,5 +65,7 @@ INSERT ALL
 	INTO teamprod VALUES (53, 'necessaries','kerasys',3300,'no',3)
 SELECT * FROM dual;
 
+SELECT * FROM MINIPRO.DELIVERY4;
+
 COMMIT;
 SELECT * FROM teamprod;
